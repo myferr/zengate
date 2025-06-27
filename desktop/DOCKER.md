@@ -18,12 +18,6 @@ docker build --build-arg TARGETARCH=aarch64 -t zengate-tauri .
 
 ---
 
-This looks solid and clear! One minor suggestion: since step 2 contains two slightly different methods for extracting the `.AppImage`, you could remove the duplicate or clarify that the second snippet is an alternative shorter one-liner (to avoid confusion).
-
-Here’s a slightly polished version of step 2 you can consider:
-
----
-
 ## 2. **Extract the Built AppImage**
 
 Since the final image is a minimal scratch container, to get the `.AppImage`, run:
