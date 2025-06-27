@@ -1,0 +1,15 @@
+# Exclude HTML and Other from GitHub language stats
+*.html linguist-vendored
+*.htm linguist-vendored
+*.xhtml linguist-vendored
+*.xml linguist-vendored
+*.svg linguist-vendored
+*.json linguist-vendored
+*.txt linguist-vendored
+*.md linguist-vendored
+*.csv linguist-vendored
+*.ini linguist-vendored
+*.conf linguist-vendored
+*.cfg linguist-vendored
+*.log linguist-vendored
+*.other linguist-vendored
