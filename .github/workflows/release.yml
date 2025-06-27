@@ -1,4 +1,5 @@
 name: releases ci/cd
+
 on:
   push:
     tags:
@@ -64,15 +65,32 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
-      - name: Download artifacts
+      - name: Download Linux artifact
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          name: zengate-ubuntu-latest
+          path: artifacts/linux
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zengate-macos-latest
+          path: artifacts/macos
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zengate-windows-latest
+          path: artifacts/windows
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/**/*.{AppImage,dmg,exe,msi}
+          files: |
+            artifacts/linux/**/*.{AppImage}
+            artifacts/macos/**/*.{dmg}
+            artifacts/windows/**/*.{exe,msi}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
