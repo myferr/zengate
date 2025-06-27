@@ -1,5 +1,4 @@
 name: releases ci/cd
-
 on:
   push:
     tags:
@@ -12,7 +11,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
-
     defaults:
       run:
         working-directory: desktop
@@ -50,14 +48,13 @@ jobs:
             libglib2.0-dev \
             pkg-config
 
-      - name: Build app
-        run: |
-          bunx tauri build
+      - name: Build Tauri app
+        run: bunx tauri build
 
       - name: Upload built artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: zengate-${{ runner.os }}
+          name: zengate-${{ matrix.os }}
           path: |
             desktop/src-tauri/target/release/bundle/**/*.AppImage
             desktop/src-tauri/target/release/bundle/**/*.dmg
@@ -65,7 +62,6 @@ jobs:
             desktop/src-tauri/target/release/bundle/**/*.msi
 
   release:
-    name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
     steps:
