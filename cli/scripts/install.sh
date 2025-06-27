@@ -1,25 +1,23 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e
 
-BIN_NAME="zengate"
-INSTALL_DIR="$HOME/.local/bin"
-GO_BUILD_OUTPUT="./$BIN_NAME"
+REPO="https://github.com/myferr/zengate"
+INSTALL_DIR="$HOME/.zengate"
+BIN_PATH="$HOME/.local/bin"
 
-echo "Building $BIN_NAME..."
-go build -o "$GO_BUILD_OUTPUT" || { echo "Go build failed! Make sure Go is installed."; exit 1; }
+echo "Cloning Zengate..."
+git clone "$REPO" "$INSTALL_DIR"
 
-mkdir -p "$INSTALL_DIR"
+cd "$INSTALL_DIR"
+make build
 
-echo "Installing $BIN_NAME to $INSTALL_DIR"
-mv -f "$GO_BUILD_OUTPUT" "$INSTALL_DIR/"
+mkdir -p "$BIN_PATH"
+cp zengate "$BIN_PATH"
 
-if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
-  echo ""
-  echo "⚠️  Warning: $INSTALL_DIR is not in your PATH."
-  echo "Add this line to your shell profile (~/.bashrc, ~/.zshrc, etc.):"
-  echo "  export PATH=\"$INSTALL_DIR:\$PATH\""
+if ! echo "$PATH" | grep -q "$BIN_PATH"; then
+  echo "export PATH=\"$BIN_PATH:\$PATH\"" >> "$HOME/.bashrc"
+  echo "Added $BIN_PATH to PATH in .bashrc. Restart your terminal or run: source ~/.bashrc"
 fi
 
-echo "$BIN_NAME installed successfully!"
-echo "You can now run it with: $BIN_NAME"
+echo "Zengate installed at $BIN_PATH/zengate"

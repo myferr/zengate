@@ -1,29 +1,17 @@
-$BIN_NAME = "zengate.exe"
-$INSTALL_DIR = "$env:USERPROFILE\bin"
-$GO_BUILD_OUTPUT = ".\$BIN_NAME"
+$Repo = "https://github.com/myferr/zengate"
+$InstallDir = "$env:USERPROFILE\.zengate"
+$BinPath = "$env:USERPROFILE\AppData\Local\Microsoft\WindowsApps"
 
-Write-Host "Building $BIN_NAME..."
-go build -o $GO_BUILD_OUTPUT
-if ($LASTEXITCODE -ne 0) {
-  Write-Error "Go build failed! Make sure Go is installed."
-  exit 1
+Write-Host "Cloning Zengate..."
+git clone $Repo $InstallDir
+
+Set-Location $InstallDir
+& "go" "build" "-o" "zengate.exe"
+
+Copy-Item -Path ".\zengate.exe" -Destination $BinPath -Force
+
+if (-not ($env:PATH -like "*$BinPath*")) {
+    Write-Host "`n⚠️ You may need to add $BinPath to your PATH manually."
+} else {
+    Write-Host "Zengate installed at $BinPath\zengate.exe"
 }
-
-if (-Not (Test-Path $INSTALL_DIR)) {
-  Write-Host "Creating directory $INSTALL_DIR"
-  New-Item -ItemType Directory -Path $INSTALL_DIR | Out-Null
-}
-
-Write-Host "Installing $BIN_NAME to $INSTALL_DIR"
-Move-Item -Force $GO_BUILD_OUTPUT "$INSTALL_DIR\$BIN_NAME"
-
-if (-Not ($env:PATH.Split(';') -contains $INSTALL_DIR)) {
-  Write-Host ""
-  Write-Warning "$INSTALL_DIR is not in your PATH environment variable."
-  Write-Host "You may want to add it. You can do this via:"
-  Write-Host "  [Environment]::SetEnvironmentVariable('PATH', $env:PATH + ';$INSTALL_DIR', 'User')"
-  Write-Host "Then restart your terminal or computer."
-}
-
-Write-Host "$BIN_NAME installed successfully!"
-Write-Host "You can now run it with: $BIN_NAME"
