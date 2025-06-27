@@ -13,3 +13,4 @@
 *.cfg linguist-vendored
 *.log linguist-vendored
 *.other linguist-vendored
+*.css linguist-vendored
