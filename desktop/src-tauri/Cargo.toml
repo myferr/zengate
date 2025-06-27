@@ -1,7 +1,7 @@
 [package]
-name = "zengate"
+name = "Zengate"
 version = "0.1.0"
-description = "A Tauri App"
+description = "A fully self-hosted password manager with end-to-end encryption"
 authors = ["you"]
 edition = "2021"
 
