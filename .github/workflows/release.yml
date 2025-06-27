@@ -29,7 +29,7 @@ jobs:
       - name: Install Tauri CLI
         run: bun add -d @tauri-apps/cli
 
-      - name: Install Linux system dependencies
+      - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
@@ -50,18 +50,18 @@ jobs:
       - name: Build Tauri app
         run: bunx tauri build
 
-      - name: List build outputs
+      - name: List final build files
         run: ls -R src-tauri/target/release/bundle
 
-      - name: Upload build artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: zengate-${{ runner.os }}
           path: |
-            desktop/src-tauri/target/release/bundle/**/*.AppImage
             desktop/src-tauri/target/release/bundle/**/*.dmg
             desktop/src-tauri/target/release/bundle/**/*.msi
             desktop/src-tauri/target/release/bundle/**/*.exe
+            desktop/src-tauri/target/release/bundle/**/*.AppImage
 
   release:
     needs: build
@@ -71,14 +71,14 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: release-artifacts
+          path: artifacts
 
-      - name: List downloaded artifacts
-        run: find release-artifacts
+      - name: List artifacts
+        run: find artifacts
 
-      - name: Publish GitHub Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: release-artifacts/**/*.{AppImage,dmg,exe,msi}
+          files: artifacts/**/*.{dmg,msi,exe,AppImage}
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }} # PAT with `repo` permission
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
