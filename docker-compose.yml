@@ -1,0 +1,17 @@
+services:
+  api:
+    build:
+      context: ./backend
+    ports:
+      - "${PORT:-3002}:3002"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend/vault.json:/app/vault.json
+      - ./backend/.env:/app/.env
+
+  tunnel:
+    image: cloudflare/cloudflared:2024.6.0
+    depends_on:
+      - api
+    command: tunnel --url http://api:3002 --no-autoupdate
