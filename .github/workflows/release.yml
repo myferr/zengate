@@ -73,7 +73,7 @@ jobs:
         with:
           path: release-artifacts
 
-      - name: Debug: List downloaded artifacts
+      - name: List downloaded artifacts
         run: find release-artifacts
 
       - name: Publish GitHub Release
