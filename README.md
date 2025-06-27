@@ -1,4 +1,6 @@
 # Zengate
+
+[![releases ci/cd](https://github.com/myferr/zengate/actions/workflows/release.yml/badge.svg)](https://github.com/myferr/zengate/actions/workflows/release.yml)
 ![](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 ![](https://img.shields.io/badge/Uses-Docker-blue?style=flat-square&logo=docker)
 ![](https://img.shields.io/badge/Tauri-v2-8A2BE2?style=flat-square&logo=tauri)
