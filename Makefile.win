@@ -1,0 +1,24 @@
+# Note: Windows doesn't support rm in native CMD, but make will work via Git Bash or WSL.
+
+CLI_DIR := cli
+DESKTOP_DIR := desktop
+CLI_BINARY := zengate.exe
+
+.PHONY: all cli desktop clean
+
+all: cli desktop
+
+## Build CLI for Windows
+cli:
+	@echo "Building CLI..."
+	cd $(CLI_DIR) && go build -o $(CLI_BINARY)
+
+## Build desktop Tauri app
+desktop:
+	@echo "Building desktop app..."
+	cd $(DESKTOP_DIR) && bun install && bunx tauri build
+
+## Clean CLI binary
+clean:
+	@echo "Cleaning up CLI binary..."
+	@del /Q $(CLI_DIR)\$(CLI_BINARY) || echo "Already clean"
