@@ -7,20 +7,16 @@ import (
 )
 
 func RunDockerCompose() error {
-	// Check if git is installed
 	_, err := exec.LookPath("git")
 	if err != nil {
 		return fmt.Errorf("git is not installed or not in PATH")
 	}
 
-	// Check if docker-compose or docker compose is available
 	dcCmd := "docker-compose"
 	if _, err := exec.LookPath(dcCmd); err != nil {
-		// fallback to docker compose (docker CLI v20+)
 		dcCmd = "docker"
 	}
 
-	// Clone repo
 	if _, err := os.Stat("zengate"); os.IsNotExist(err) {
 		fmt.Println("Cloning https://github.com/myferr/zengate ...")
 		cmd := exec.Command("git", "clone", "https://github.com/myferr/zengate")
@@ -33,7 +29,6 @@ func RunDockerCompose() error {
 		fmt.Println("zengate directory exists, skipping clone.")
 	}
 
-	// Change directory and run docker-compose up --build
 	fmt.Println("Running docker compose up --build...")
 	var runCmd *exec.Cmd
 	if dcCmd == "docker-compose" {
@@ -45,10 +40,5 @@ func RunDockerCompose() error {
 	runCmd.Stdout = os.Stdout
 	runCmd.Stderr = os.Stderr
 
-	err = runCmd.Run()
-	if err != nil {
-		return fmt.Errorf("docker compose failed: %w", err)
-	}
-
-	return nil
+	return runCmd.Run()
 }

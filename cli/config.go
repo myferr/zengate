@@ -56,7 +56,6 @@ func SaveConfig(cfg *Config) error {
 	return os.WriteFile(path, data, 0600)
 }
 
-// ValidateEncryptKey checks if encryptKey is base64 and 32 bytes decoded
 func ValidateEncryptKey(key string) error {
 	key = strings.TrimSpace(key)
 	decoded, err := base64.StdEncoding.DecodeString(key)

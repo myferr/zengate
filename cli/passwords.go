@@ -14,7 +14,7 @@ type PasswordEntry struct {
 	ID       int       `json:"id"`
 	Site     string    `json:"site"`
 	Username string    `json:"username"`
-	Password string    `json:"password"`
+	Password string    `json:"password"` // encrypted
 	Created  time.Time `json:"created"`
 }
 
@@ -64,6 +64,14 @@ func SavePasswords(store *PasswordStore) error {
 }
 
 func AddPassword(site, username, password string) error {
+	cfg, err := LoadConfig()
+	if err != nil {
+		return err
+	}
+	if cfg.EncryptKey == "" {
+		return errors.New("no encrypt_key configured. Run `zengate set encrypt_key <base64>` first")
+	}
+
 	store, err := LoadPasswords()
 	if err != nil {
 		return err
@@ -77,11 +85,17 @@ func AddPassword(site, username, password string) error {
 			nextID = p.ID + 1
 		}
 	}
+
+	encryptedPassword, err := EncryptAESGCM(password, cfg.EncryptKey)
+	if err != nil {
+		return fmt.Errorf("encryption failed: %w", err)
+	}
+
 	entry := PasswordEntry{
 		ID:       nextID,
 		Site:     site,
 		Username: username,
-		Password: password,
+		Password: encryptedPassword,
 		Created:  time.Now(),
 	}
 	store.Passwords = append(store.Passwords, entry)
@@ -89,15 +103,27 @@ func AddPassword(site, username, password string) error {
 }
 
 func ListPasswords() error {
+	cfg, err := LoadConfig()
+	if err != nil {
+		return err
+	}
+	if cfg.EncryptKey == "" {
+		return errors.New("no encrypt_key configured. Run `zengate set encrypt_key <base64>` first")
+	}
+
 	store, err := LoadPasswords()
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("ID\tSite\t\tUsername\tCreated\n")
-	fmt.Println("------------------------------------------------------")
+	fmt.Printf("ID\tSite\t\tUsername\tPassword\t\tCreated\n")
+	fmt.Println("----------------------------------------------------------------------------")
 	for _, p := range store.Passwords {
-		fmt.Printf("%d\t%s\t%s\t%s\n", p.ID, p.Site, p.Username, p.Created.Format("2006-01-02 15:04:05"))
+		decryptedPass, err := DecryptAESGCM(p.Password, cfg.EncryptKey)
+		if err != nil {
+			decryptedPass = "(decryption failed)"
+		}
+		fmt.Printf("%d\t%s\t%s\t%s\t%s\n", p.ID, p.Site, p.Username, decryptedPass, p.Created.Format("2006-01-02 15:04:05"))
 	}
 	return nil
 }

@@ -90,25 +90,17 @@ func RunCommand(args []string) error {
 				fmt.Print("Site? ")
 				s, _ := reader.ReadString('\n')
 				site = strings.TrimSpace(s)
-				if site == "" {
-					site = "github.com"
-				}
 
 				fmt.Print("Username? ")
 				u, _ := reader.ReadString('\n')
 				user = strings.TrimSpace(u)
-				if user == "" {
-					user = "johndoe"
-				}
 
 				fmt.Print("Password? ")
 				p, _ := reader.ReadString('\n')
 				pass = strings.TrimSpace(p)
-				if pass == "" {
-					pass = "password123"
-				}
 			}
 
+			// TODO: Encrypt here before sending to backend
 			err := AddPassword(site, user, pass)
 			if err != nil {
 				return err
