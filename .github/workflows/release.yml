@@ -3,8 +3,8 @@ name: releases ci/cd
 on:
   push:
     tags:
-      - "v*.*.*"
       - "test-v*.*.*"
+      - "v*.*.*"
 
 jobs:
   build:
@@ -13,8 +13,12 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
+    defaults:
+      run:
+        working-directory: desktop
+
     steps:
-      - name: Checkout repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Bun
@@ -29,31 +33,32 @@ jobs:
         run: bun add -d @tauri-apps/cli
 
       - name: Build app
-        run: bunx tauri build
+        run: |
+          bunx tauri build
 
-      - name: Upload build artifacts
+      - name: Upload built artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-${{ runner.os }}
+          name: zengate-${{ runner.os }}
           path: |
-            src-tauri/target/release/bundle/**/*.AppImage
-            src-tauri/target/release/bundle/**/*.dmg
-            src-tauri/target/release/bundle/**/*.msi
-            src-tauri/target/release/bundle/**/*.exe
+            desktop/src-tauri/target/release/bundle/**/*.AppImage
+            desktop/src-tauri/target/release/bundle/**/*.dmg
+            desktop/src-tauri/target/release/bundle/**/*.exe
+            desktop/src-tauri/target/release/bundle/**/*.msi
 
   release:
-    name: Create Release
+    name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download all build artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
-      - name: Create GitHub Release
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/**/*
+          files: artifacts/**/*.{AppImage,dmg,exe,msi}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
