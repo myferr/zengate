@@ -92,4 +92,4 @@ jobs:
             artifacts/macos/**/*.{dmg}
             artifacts/windows/**/*.{exe,msi}
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }} # 🔐 Use a Personal Access Token here
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }} # repository secret
