@@ -51,22 +51,29 @@ jobs:
         run: bunx tauri build
 
       - name: List built files
-        run: find src-tauri/target/release/bundle || echo "Nothing built"
+        run: |
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            dir src-tauri\\target\\release\\bundle /s /b || echo "Nothing built"
+          else
+            find src-tauri/target/release/bundle || echo "Nothing built"
+          fi
+        shell: bash
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: zengate-${{ matrix.os }}
           path: |
-            src-tauri/target/release/bundle/**/*.dmg
-            src-tauri/target/release/bundle/**/*.msi
-            src-tauri/target/release/bundle/**/*.exe
-            src-tauri/target/release/bundle/**/*.AppImage
+            desktop/src-tauri/target/release/bundle/**/*.dmg
+            desktop/src-tauri/target/release/bundle/**/*.msi
+            desktop/src-tauri/target/release/bundle/**/*.exe
+            desktop/src-tauri/target/release/bundle/**/*.AppImage
+          if-no-files-found: warn
 
   release:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
