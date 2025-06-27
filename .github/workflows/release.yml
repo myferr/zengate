@@ -50,13 +50,14 @@ jobs:
       - name: Build Tauri app
         run: bunx tauri build
 
-      - name: List final build files
-        run: ls -R src-tauri/target/release/bundle
+      - name: List built files
+        run: find src-tauri/target/release/bundle || echo "Nothing built"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: zengate-${{ runner.os }}
+          name: zengate-${{ matrix.os }}
           path: |
             src-tauri/target/release/bundle/**/*.dmg
             src-tauri/target/release/bundle/**/*.msi
@@ -66,7 +67,6 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -74,11 +74,15 @@ jobs:
           path: artifacts
 
       - name: List artifacts
-        run: find artifacts
+        run: find artifacts || echo "No artifacts found"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: artifacts/**/*.{dmg,msi,exe,AppImage}
+          files: |
+            artifacts/**/*.dmg
+            artifacts/**/*.msi
+            artifacts/**/*.exe
+            artifacts/**/*.AppImage
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
